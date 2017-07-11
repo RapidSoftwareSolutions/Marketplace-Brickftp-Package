@@ -4,7 +4,7 @@ $app->post('/api/Brickftp/deleteFile', function ($request, $response) {
 
     $settings = $this->settings;
     $checkRequest = $this->validation;
-    $validateRes = $checkRequest->validate($request, ['apiKey','subdomain','fileName','path']);
+    $validateRes = $checkRequest->validate($request, ['apiKey','subdomain','name','sourcePath']);
 
     if(!empty($validateRes) && isset($validateRes['callback']) && $validateRes['callback']=='error') {
         return $response->withHeader('Content-type', 'application/json')->withStatus(200)->withJson($validateRes);
@@ -13,10 +13,10 @@ $app->post('/api/Brickftp/deleteFile', function ($request, $response) {
     }
     $apiKey = $post_data['args']['apiKey'];
     $subdomain = $post_data['args']['subdomain'];
-    $fileName = $post_data['args']['fileName'];
-    $path = $post_data['args']['path'];
+    $name = $post_data['args']['name'];
+    $sourcePath = $post_data['args']['sourcePath'];
 
-    $query_str = "https://$subdomain.brickftp.com/api/rest/v1/files/$path/$fileName";
+    $query_str = "https://$subdomain.brickftp.com/api/rest/v1/files/$sourcePath/$name";
     $client = $this->httpClient;
 
     try {
