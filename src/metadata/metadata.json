@@ -1,0 +1,1965 @@
+{
+  "package": "Brickftp",
+  "tagline": "Brickftp API",
+  "description": "Secure FTP Server Hosting with Web Interface, FTP, SFTP, WebDAV, LDAP amp; File Sharing.",
+  "image": "https://brickftp.com/img/logo-color.png",
+  "repo": "https://github.com/RapidSoftwareSolutions/Marketplace-Brickftp-Package",
+  "keywords": [
+    "API",
+    "ftp",
+    "data",
+    "storage"
+  ],
+  "accounts": {
+    "domain": "brickftp.com",
+    "credentials": [
+      "apiKey"
+    ]
+  },
+  "events": [
+    {
+      "name": "webhookEvent",
+      "description": "",
+      "payload":
+      {
+        "action": "Create folder"
+      },
+      "steps": [
+        "Visit the Behaviors tab of a folder you would like to assign a Webhook to",
+        "Set value to __WEBHOOK_URL__"
+      ],
+      "args": [
+        {
+          "name": "token",
+          "type": "string",
+          "info": "Token sent on each message",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "name": "getAllUsers",
+      "description": "This endpoint lists all users on the current site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getSingleUser",
+      "description": "This endpoint shows a single user.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each User. Each user is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createUser",
+      "description": "This endpoint creates a new user on the current site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "info": "Username for the user. This is how the user will be displayed on the site.",
+          "required": true
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "info": "Password for the user. This property is write-only. It cannot be retrieved via the API.",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Real name of the user. For your reference.",
+          "required": false
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "info": "E-Mail address of the user.",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "info": "You may use this property to store any additional information you require. There are no restrictions on its formatting.",
+          "required": false
+        },
+        {
+          "name": "groupIds",
+          "type": "List",
+          "info": "IDs of the Groups that this user is in.",
+          "required": false,
+          "structure": {
+            "name": "id",
+            "type": "Number",
+            "info": "Group id."
+          }
+        },
+        {
+          "name": "ftpPermission",
+          "type": "Boolean",
+          "info": "Allow user access via FTP/FTPS (port 21 or 990) interface.",
+          "required": false
+        },
+        {
+          "name": "sftpPermission",
+          "type": "Boolean",
+          "info": "Allow user access via SFTP (port 22) interface.",
+          "required": false
+        },
+        {
+          "name": "davPermission",
+          "type": "Boolean",
+          "info": "Allow user access via WebDAV (port 443) interface.",
+          "required": false
+        },
+        {
+          "name": "restapiPermission",
+          "type": "Boolean",
+          "info": "Allow user access the REST API, via HTTP/HTTPS (port 80 or 443), and the desktop application.",
+          "required": false
+        },
+        {
+          "name": "attachmentsPermission",
+          "type": "Boolean",
+          "info": "Allow user to use Sharing tab in web interface to share files with anonymous users via a unique URL.",
+          "required": false
+        },
+        {
+          "name": "selfManaged",
+          "type": "Boolean",
+          "info": "Allow user to change their password and user information via the web interface.",
+          "required": false
+        },
+        {
+          "name": "requirePasswordChange",
+          "type": "Boolean",
+          "info": "Require user to change their password at their next login. Note: requires restapi_permission to be true, as password changes can only occur via the web interface.",
+          "required": false
+        },
+        {
+          "name": "allowedIps",
+          "type": "List",
+          "info": "List allowed IPs, one per line. You may specify a range in CIDR format, such as 192.168.1.0/27. Leave blank to allow all IPs. If you are also restricting IP addresses on the Site tab, users matching in either place will be allowed to log in.",
+          "required": false,
+          "structure": {
+            "name": "ip",
+            "type": "String",
+            "info": "ip"
+          }
+        },
+        {
+          "name": "userRoot",
+          "type": "String",
+          "info": "Folder to show as the root when this user logs in via the FTP interface. Make sure this folder exists, as it will not be automatically created. Does not apply to the web interface! This should not contain a leading slash, but must contain a trailing slash. Example: Users/jenny/.",
+          "required": false
+        },
+        {
+          "name": "grantPermission",
+          "type": "String",
+          "info": "Value must be set to full, read, write, preview, read+write, or preview+write. The user will be granted that permission on their FTP root folder as defined by the user_root. This property is write-only. It cannot be retrieved via the User resource of the REST API, though may be obtained with the Permissions resource of the REST API.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "updateUser",
+      "description": "This method updates an existing user.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each User. Each user is given an ID automatically upon creation.",
+          "required": true
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "info": "Username for the user. This is how the user will be displayed on the site.",
+          "required": false
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "info": "Password for the user. This property is write-only. It cannot be retrieved via the API.",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Real name of the user. For your reference.",
+          "required": false
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "info": "E-Mail address of the user.",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "info": "You may use this property to store any additional information you require. There are no restrictions on its formatting.",
+          "required": false
+        },
+        {
+          "name": "groupIds",
+          "type": "List",
+          "info": "IDs of the Groups that this user is in.",
+          "required": false,
+          "structure": {
+            "name": "id",
+            "type": "Number",
+            "info": "Group id."
+          }
+        },
+        {
+          "name": "ftpPermission",
+          "type": "Boolean",
+          "info": "Allow user access via FTP/FTPS (port 21 or 990) interface.",
+          "required": false
+        },
+        {
+          "name": "sftpPermission",
+          "type": "Boolean",
+          "info": "Allow user access via SFTP (port 22) interface.",
+          "required": false
+        },
+        {
+          "name": "davPermission",
+          "type": "Boolean",
+          "info": "Allow user access via WebDAV (port 443) interface.",
+          "required": false
+        },
+        {
+          "name": "restapiPermission",
+          "type": "Boolean",
+          "info": "Allow user access the REST API, via HTTP/HTTPS (port 80 or 443), and the desktop application.",
+          "required": false
+        },
+        {
+          "name": "attachmentsPermission",
+          "type": "Boolean",
+          "info": "Allow user to use Sharing tab in web interface to share files with anonymous users via a unique URL.",
+          "required": false
+        },
+        {
+          "name": "selfManaged",
+          "type": "Boolean",
+          "info": "Allow user to change their password and user information via the web interface.",
+          "required": false
+        },
+        {
+          "name": "requirePasswordChange",
+          "type": "Boolean",
+          "info": "Require user to change their password at their next login. Note: requires restapi_permission to be true, as password changes can only occur via the web interface.",
+          "required": false
+        },
+        {
+          "name": "allowedIps",
+          "type": "List",
+          "info": "List allowed IPs, one per line. You may specify a range in CIDR format, such as 192.168.1.0/27. Leave blank to allow all IPs. If you are also restricting IP addresses on the Site tab, users matching in either place will be allowed to log in.",
+          "required": false,
+          "structure": {
+            "name": "ip",
+            "type": "String",
+            "info": "ip"
+          }
+        },
+        {
+          "name": "userRoot",
+          "type": "String",
+          "info": "Folder to show as the root when this user logs in via the FTP interface. Make sure this folder exists, as it will not be automatically created. Does not apply to the web interface! This should not contain a leading slash, but must contain a trailing slash. Example: Users/jenny/.",
+          "required": false
+        },
+        {
+          "name": "grantPermission",
+          "type": "String",
+          "info": "Value must be set to full, read, write, preview, read+write, or preview+write. The user will be granted that permission on their FTP root folder as defined by the user_root. This property is write-only. It cannot be retrieved via the User resource of the REST API, though may be obtained with the Permissions resource of the REST API.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteUser",
+      "description": "This endpoint deletes a user.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each User. Each user is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "unlockUser",
+      "description": "This endpoint unlocks a user that has been locked out by Brute Force Login Protection.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each User. Each user is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllGroups",
+      "description": "This endpoint lists all groups on the current site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getSingleGroup",
+      "description": "This endpoint shows a single group.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Group. Each group is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createGroup",
+      "description": "This endpoint creates a new group on the current site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Name of the Group. This is how the group will be displayed on the site.",
+          "required": true
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "info": "You may use this property to store any additional information you require. There are no restrictions on its formatting.",
+          "required": false
+        },
+        {
+          "name": "userIds",
+          "type": "List",
+          "info": "IDs of the Users that are in this group.",
+          "required": false,
+          "structure": {
+            "name": "id",
+            "type": "Number",
+            "info": "User id."
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "updateGroup",
+      "description": "This method updates an existing group.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Group. Each group is given an ID automatically upon creation.",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Name of the Group. This is how the group will be displayed on the site.",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "info": "You may use this property to store any additional information you require. There are no restrictions on its formatting.",
+          "required": false
+        },
+        {
+          "name": "userIds",
+          "type": "List",
+          "info": "IDs of the Users that are in this group.",
+          "required": false,
+          "structure": {
+            "name": "id",
+            "type": "Number",
+            "info": "User id."
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteGroup",
+      "description": "This endpoint deletes a group.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Group. Each group is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllPermissions",
+      "description": "This endpoint shows all Permissions on the current Site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createPermission",
+      "description": "This endpoint creates a new Permission record.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Folder path for the permission to apply to. This must be slash-delimited, but it must neither start nor end with a slash.",
+          "required": true
+        },
+        {
+          "name": "permission",
+          "type": "String",
+          "info": "Value must be set to full, readonly, writeonly, or previewonly, depending on the type of access to be granted by the Permission.",
+          "required": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "info": "Unique identifier for the user being granted a permission. Each user is given an ID automatically upon creation. The user_id and group_id fields cannot both be set.",
+          "required": false
+        },
+        {
+          "name": "groupId",
+          "type": "String",
+          "info": "Unique identifier for the group being granted a permission. Each group is given an ID automatically upon creation. The user_id and group_id fields cannot both be set.",
+          "required": false
+        },
+        {
+          "name": "recursive",
+          "type": "Boolean",
+          "info": "If set to false, the permission will be non-recursive, and will not apply to subfolders of the folder specified by the path property.",
+          "required": false
+        }
+
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deletePermission",
+      "description": "This endpoint deletes a permission record.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Permission. Each permission is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllNotifications",
+      "description": "This endpoint shows all Notifications on the current Site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createNotification",
+      "description": "The create endpoint creates a notification record.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Folder path for notifications. This must be slash-delimited, but it must neither start nor end with a slash.",
+          "required": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "info": "Unique identifier for the user being notified. Each user is given an ID automatically upon creation. You can look up user IDs by using the User resource of this REST API.",
+          "required": true
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "info": "Username for the user given by user_id. If this value is set during creation and user_id is not set, the user_id is looked up from the username and set.",
+          "required": false
+        }
+
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteNotification",
+      "description": "The delete endpoint deletes a notification record.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Notification. Each notification is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllHistory",
+      "description": "This endpoint shows the entire history for the current site. The history starts with the most recent entries and proceeds back in time. There is a maximum number of records that will be returned with a single request (default 1000 or whatever value you provide as the per_page parameter, up to a maximum of 10,000).",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Default: 1000, maximum: 10000. Leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "startAt",
+          "type": "DatePicker",
+          "info": "Date and time in the history to start from.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getLoginHistory",
+      "description": "This endpoint shows login history only. The history starts with the most recent entries and proceeds back in time. There is a maximum number of records that will be returned with a single request (default 1000 or whatever value you provide as the per_page parameter, up to a maximum of 10,000).",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Default: 1000, maximum: 10000. Leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "startAt",
+          "type": "DatePicker",
+          "info": "Date and time in the history to start from.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getUserHistory",
+      "description": "This endpoint shows all history for a specific user. The history starts with the most recent entries and proceeds back in time. There is a maximum number of records that will be returned with a single request (default 1000 or whatever value you provide as the per_page parameter, up to a maximum of 10,000).",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each History entry.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Default: 1000, maximum: 10000. Leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "startAt",
+          "type": "DatePicker",
+          "info": "Date and time in the history to start from.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getFolderHistory",
+      "description": "This endpoint shows all history for a specific folder. The history starts with the most recent entries and proceeds back in time.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Path of the file or folder associated with the History entry.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Default: 1000, maximum: 10000. Leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "startAt",
+          "type": "DatePicker",
+          "info": "Date and time in the history to start from.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getFileHistory",
+      "description": "This endpoint shows all history for a specific file. The history starts with the most recent entries and proceeds back in time.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Path of the file or folder associated with the History entry.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Default: 1000, maximum: 10000. Leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "startAt",
+          "type": "DatePicker",
+          "info": "Date and time in the history to start from.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllBundles",
+      "description": "This endpoint lists all Bundles on the current Site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getSingleBundle",
+      "description": "This endpoint shows a single bundle.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Group. Each group is given an ID automatically upon creation.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createBundle",
+      "description": "This endpoint creates a bundle.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "paths",
+          "type": "List",
+          "info": "List of the paths associated with the Bundle.",
+          "required": true,
+          "structure": {
+            "name": "path",
+            "type": "String",
+            "info": "Single path"
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteBundle",
+      "description": "This endpoint deletes a group.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Bundle.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "listsBundleContent",
+      "description": "This endpoint lists the contents of a bundle. When no path is specified, the contents of the root of the bundle will be listed. ",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Path associated with the Bundle.",
+          "required": false
+        },
+        {
+          "name": "code",
+          "type": "String",
+          "info": "Unique code string identifier for the Bundle.",
+          "required": true
+        },
+        {
+          "name": "host",
+          "type": "String",
+          "info": "Bundle host.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "downloadBundleContent",
+      "description": "This endpoint provides download URLs that will enable you to download the files in a bundle. The download URLs are direct URLs to Amazon S3 that have been signed by BrickFTP to provide temporary access to the files. The download links are valid for 3 minutes.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "code",
+          "type": "String",
+          "info": "Unique code string identifier for the Bundle.",
+          "required": false
+        },
+        {
+          "name": "host",
+          "type": "String",
+          "info": "Bundle host.",
+          "required": false
+        },
+        {
+          "name": "paths",
+          "type": "List",
+          "info": "List of the paths associated with the Bundle.",
+          "required": true,
+          "structure": {
+            "name": "path",
+            "type": "String",
+            "info": "Single path"
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "getAllBehaviors",
+      "description": "This endpoint lists all Behaviors on the current Site.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getFolderBehavior",
+      "description": "This endpoint shows the behaviors that apply to the given path.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Folder path for behaviors. This must be slash-delimited, but it must neither start nor end with a slash.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "getSingleBehavior",
+      "description": "This endpoint shows a single behavior.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Behavior.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createBehavior",
+      "description": "This endpoint creates a behavior.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Folder path for behaviors. This must be slash-delimited, but it must neither start nor end with a slash.",
+          "required": true
+        },
+        {
+          "name": "behavior",
+          "type": "String",
+          "info": "The behavior type. Will be one of the following: webhook.",
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": "List",
+          "info": "List of values associated with the behavior.",
+          "required": true,
+          "structure": {
+            "name": "value",
+            "type": "String",
+            "info": "value"
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "updateBehavior",
+      "description": "This endpoint updates an existing behavior.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Behavior.",
+          "required": true
+        },
+        {
+          "name": "behavior",
+          "type": "String",
+          "info": "The behavior type. Will be one of the following: webhook.",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "List",
+          "info": "List of values associated with the behavior.",
+          "required": false,
+          "structure": {
+            "name": "value",
+            "type": "String",
+            "info": "value"
+          }
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteBehavior",
+      "description": "This endpoint deletes a behavior.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "String",
+          "info": "Globally unique identifier of each Behavior.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+
+    {
+      "name": "listsFolderContent",
+      "description": "The index endpoint lists the contents of the folder provided in the URL. Remember that a blank URL refers to the root folder.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Full path of the folder.",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "Number",
+          "info": "Page number of items to return in this request.",
+          "required": false
+        },
+        {
+          "name": "perPage",
+          "type": "Number",
+          "info": "Requested number of items returned per request. Maximum: 5000, leave blank for default (strongly recommended).",
+          "required": false
+        },
+        {
+          "name": "search",
+          "type": "String",
+          "info": "Only return items matching the given search text.",
+          "required": false
+        },
+        {
+          "name": "sortByPath",
+          "type": "String",
+          "info": "Sort by file name, and value is either asc or desc to indicate normal or reverse sort.",
+          "required": false
+        },
+        {
+          "name": "sortBySize",
+          "type": "String",
+          "info": "Sort by file size, and value is either asc or desc to indicate smaller files first or larger files first, respectively.",
+          "required": false
+        },
+        {
+          "name": "sortByModified",
+          "type": "String",
+          "info": "Sort by modification time, and value is either asc or desc to indicate older files first or newer files first, respectively.",
+          "required": false
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "createFolder",
+      "description": "The create endpoint creates a folder.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Folder name",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Folder path",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "downloadFile",
+      "description": "This endpoint provides a download URL that will enable you to download a file. The download URL is a direct URL to Amazon S3 that has been signed by BrickFTP to provide temporary access to the file. The download links are valid for 3 minutes.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Name of downloaded file",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "File path",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "moveFile",
+      "description": "This endpoint moves a file or folder",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Name of file",
+          "required": true
+        },
+        {
+          "name": "sourcePath",
+          "type": "String",
+          "info": "Source path",
+          "required": true
+        },
+        {
+          "name": "destinationPath",
+          "type": "String",
+          "info": "Destination path",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "renameFile",
+      "description": "This endpoint renames a file or folder",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Name of file",
+          "required": true
+        },
+        {
+          "name": "sourcePath",
+          "type": "String",
+          "info": "Source path",
+          "required": true
+        },
+        {
+          "name": "newFileName",
+          "type": "String",
+          "info": "Name of file",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "copyFile",
+      "description": "This endpoint copies a file or folder to the destination folder.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Name of file",
+          "required": true
+        },
+        {
+          "name": "sourcePath",
+          "type": "String",
+          "info": "Source path",
+          "required": true
+        },
+        {
+          "name": "destinationPath",
+          "type": "String",
+          "info": "Destination path",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "deleteFile",
+      "description": "This endpoint deletes a file or folder.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "info": "Name of file or folder",
+          "required": true
+        },
+        {
+          "name": "sourcePath",
+          "type": "String",
+          "info": "Source path",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "startFileUpload",
+      "description": "The first request to upload a new file.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Uploaded file",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Destination folder",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "uploadFilePart",
+      "description": "At this point, you are to send a request to the endpoint provided by BrickFTP with the file data and the headers and parameters provided to you from BrickFTP.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "file",
+          "type": "File",
+          "info": "Uploaded file",
+          "required": true
+        },
+        {
+          "name": "uploadUri",
+          "type": "String",
+          "info": "The URL where the file is uploaded to.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "additionalUpload",
+      "description": "Once an upload has been opened and before it is completed, additional upload URLs can be requested from the REST API.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Uploaded file",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Destination folder",
+          "required": true
+        },
+        {
+          "name": "ref",
+          "type": "String",
+          "info": "Returned at the start of the upload",
+          "required": true
+        },
+        {
+          "name": "part",
+          "type": "String",
+          "info": "Set to the part number the upload URL should refer to.",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    },
+    {
+      "name": "completeUpload",
+      "description": "After uploading the file to the file storage environment, the REST API needs to be notified that the upload was completed.",
+      "args": [
+        {
+          "name": "apiKey",
+          "type": "credentials",
+          "info": "Your API key.",
+          "required": true
+        },
+        {
+          "name": "subdomain",
+          "type": "String",
+          "info": "Your site’s subdomain.",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "String",
+          "info": "Destination folder",
+          "required": true
+        },
+        {
+          "name": "fileName",
+          "type": "String",
+          "info": "Uploaded file",
+          "required": true
+        },
+        {
+          "name": "ref",
+          "type": "String",
+          "info": "Returned at the start of the upload",
+          "required": true
+        }
+      ],
+      "callbacks": [{
+        "name": "error",
+        "info": "Error"
+      }, {
+        "name": "success",
+        "info": "Success"
+      }]
+    }
+  ]
+}
