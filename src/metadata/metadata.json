@@ -1325,6 +1325,12 @@
           "type": "String",
           "info": "Folder path for behaviors. This must be slash-delimited, but it must neither start nor end with a slash.",
           "required": true
+        },
+        {
+          "name": "recursive",
+          "type": "Boolean",
+          "info": "If set to false, the permission will be non-recursive, and will not apply to subfolders of the folder specified by the path property.",
+          "required": false
         }
       ],
       "callbacks": [{

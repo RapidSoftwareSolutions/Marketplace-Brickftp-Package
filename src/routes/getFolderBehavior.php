@@ -15,7 +15,12 @@ $app->post('/api/Brickftp/getFolderBehavior', function ($request, $response) {
     $subdomain = $post_data['args']['subdomain'];
     $path = $post_data['args']['path'];
 
-    $query_str = "https://$subdomain.brickftp.com/api/rest/v1/behaviors/folders/$path.json";
+    $query = [];
+    if(isset($post_data['args']['recursive'])) {
+        $query['recursive'] = 1;
+    }
+
+    $query_str = "https://$subdomain.brickftp.com/api/rest/v1/behaviors/folders/$path";
     $client = $this->httpClient;
 
     try {
@@ -23,7 +28,8 @@ $app->post('/api/Brickftp/getFolderBehavior', function ($request, $response) {
             'auth' => [
                 $apiKey,
                 '.'
-            ]
+            ],
+            'query' => $query
         ]);
         $responseBody = $resp->getBody()->getContents();
 
